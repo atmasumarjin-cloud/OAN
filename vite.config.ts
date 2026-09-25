@@ -1,12 +1,16 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig, Plugin } from 'vite';
 import dotenv from 'dotenv';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { APP_CONFIG } from './appConfig.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const rootDir = path.dirname(__filename);
 
 function geminiDevApiPlugin(): Plugin {
   return {
@@ -114,7 +118,9 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss(), geminiDevApiPlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': rootDir,
+        '/src': path.resolve(rootDir, 'src'),
+        'src': path.resolve(rootDir, 'src'),
       },
     },
     server: {
