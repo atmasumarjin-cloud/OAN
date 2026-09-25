@@ -1,18 +1,11 @@
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { APP_CONFIG } from './appConfig.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -66,8 +59,10 @@ Instruksi Sikap & Tugas:
 // POST /api/recommendation endpoint for AI Consultation
 app.post('/api/recommendation', async (req, res) => {
   try {
-    const { prompt, childName, grade, preferredSubject, messageHistory } = req.body;
-    const userPrompt = prompt || `Halo, saya ingin konsultasi pemilihan lomba olimpiade untuk anak saya yang bernama ${childName || 'Ananda'}, saat ini kelas ${grade || 'SD/SMP'}, tertarik dengan ${preferredSubject || 'sains/matematika'}. Mohon rekomendasinya.`;
+    const { prompt, childName, grade, preferredSubject } = req.body;
+    const userPrompt =
+      prompt ||
+      `Halo, saya ingin konsultasi pemilihan lomba olimpiade untuk anak saya yang bernama ${childName || 'Ananda'}, saat ini kelas ${grade || 'SD/SMP'}, tertarik dengan ${preferredSubject || 'sains/matematika'}. Mohon rekomendasinya.`;
 
     if (!process.env.GEMINI_API_KEY) {
       return res.json({
@@ -131,32 +126,6 @@ app.post('/api/recommendation', async (req, res) => {
 // Endpoint to retrieve public app configuration
 app.get('/api/config', (req, res) => {
   res.json({ success: true, config: APP_CONFIG });
-});
-
-// Serve static assets for Production & cPanel Node.js Selector
-const possibleDistPaths = [
-  path.join(__dirname, 'dist'),
-  path.join(__dirname, 'client', 'dist'),
-];
-
-let distPath = possibleDistPaths.find((p) => fs.existsSync(p));
-
-if (distPath) {
-  app.use(express.static(distPath));
-  // Catch-all route to prevent 404 on SPA reload
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-} else {
-  app.get('/', (req, res) => {
-    res.send(
-      `<h1>${APP_CONFIG.brandName} API Server Running</h1><p>Frontend static assets not built yet. Run <code>npm run build</code>.</p>`
-    );
-  });
-}
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[${APP_CONFIG.brandName}] Server running on port ${PORT}`);
 });
 
 export default app;
