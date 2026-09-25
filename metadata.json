@@ -1,0 +1,6 @@
+{
+  "name": "Olimpiade Anak Nusantara",
+  "description": "Platform Resmi Olimpiade Online Tingkat Nasional Indonesia untuk SD dan SMP. Didukung oleh Yayasan Besarrasa Bagi Bangsa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
